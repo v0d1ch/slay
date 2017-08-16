@@ -78,8 +78,8 @@ data PrimCurve g =
   PrimCurve
     { curveExtents :: Extents,
       curveCurvature :: g Curvature,
-      curveDirection :: Direction,
-      curveColor :: g Color
+      curveColor :: g Color,
+      curveDirection :: Direction
     }
 
 
@@ -104,8 +104,8 @@ rect background extents = inj (PrimRect extents background)
 text :: Inj (PrimText g) a => Font g -> Text -> g (Maybe Natural) -> a
 text font content cursor = inj (PrimText font content cursor)
 
-curve :: Inj (PrimCurve g) a => g Curvature -> Direction -> g Color ->  Extents -> a
-curve curvature direction color  extents = inj (PrimCurve extents curvature direction color )
+curve :: Inj (PrimCurve g) a => g Curvature -> g Color -> Direction ->   Extents -> a
+curve curvature color direction extents = inj (PrimCurve extents curvature color direction)
 
 data LRTB a = LRTB
   { left :: a,
