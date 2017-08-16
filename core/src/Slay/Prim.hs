@@ -1,5 +1,6 @@
 module Slay.Prim
   ( Color(..)
+  , Direction(..)
   , FontWeight(..)
   , Font(..)
   , Curvature(..)
@@ -64,6 +65,12 @@ deriving instance (Eq (g (Maybe Natural)), Eq (g (Color))) => Eq (PrimText g)
 deriving instance (Ord (g (Maybe Natural)), Ord (g (Color))) => Ord (PrimText g)
 deriving instance (Show (g (Maybe Natural)), Show (g (Color))) => Show (PrimText g)
 
+data Direction =
+     Direction
+      { directionLeftToRight :: Bool,
+        directionTopToBottom :: Bool
+      } deriving (Eq, Ord, Show)
+
 -- from -1 to 1
 newtype Curvature = Curvature Rational
 
@@ -71,8 +78,10 @@ data PrimCurve g =
   PrimCurve
     { curveExtents :: Extents,
       curveCurvature :: g Curvature,
+      curveDirection :: Direction,
       curveColor :: g Color
     }
+
 
 class Inj p a where
   inj :: p -> a
@@ -95,8 +104,8 @@ rect background extents = inj (PrimRect extents background)
 text :: Inj (PrimText g) a => Font g -> Text -> g (Maybe Natural) -> a
 text font content cursor = inj (PrimText font content cursor)
 
-curve :: Inj (PrimCurve g) a => g Curvature -> g Color -> Extents -> a
-curve curvature color extents = inj (PrimCurve extents curvature color)
+curve :: Inj (PrimCurve g) a => g Curvature -> Direction -> g Color ->  Extents -> a
+curve curvature direction color  extents = inj (PrimCurve extents curvature direction color )
 
 data LRTB a = LRTB
   { left :: a,
@@ -123,4 +132,3 @@ substrate pad mkObject collage =
     extents = Extents
       { extentsW = left pad + extentsW e + right pad,
         extentsH = top pad + extentsH e + bottom pad }
-

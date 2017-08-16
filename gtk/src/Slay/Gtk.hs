@@ -67,7 +67,8 @@ data AppState = AppState
   { appStateLabel :: Text,
     appStateCursor :: Natural,
     appStatePreMatrix :: PreMatrix,
-    appStateCollageElements :: ((CollageElements, Extents), Word8 -> Color)
+    appStateDirection :: Direction,
+    appStateCollageElements :: ((CollageElements, Extents), (Word8 -> Color))
   }
 
 appStateMatrix :: AppState -> Cairo.Matrix
@@ -345,7 +346,7 @@ withExtents matrix = \case
 ubuntuFont :: Centi -> Font WithPhase
 ubuntuFont size = Font "Ubuntu" size (PhaseConst (RGB 0 0 0)) FontWeightNormal
 
-newtype Vis a = Vis (Text -> (a, Extents), Word8 -> Color)
+newtype Vis a = Vis (Text -> (a, Extents), (Word8 -> Color))
   deriving (Functor)
 
 exampleLayout :: Layout Vis El

@@ -103,7 +103,7 @@ bendPoint :: Curvature -> (Double, Double) -> (Double, Double) -> (Double, Doubl
 bendPoint c (ax, ay) (bx, by) = (bend c ax bx, bend c ay by)
 
 instance RenderElement g (PrimCurve g) where
-  renderElement (PrimCurve extents gcurvature color) getG (Offset x y) = do
+  renderElement (PrimCurve extents gcurvature direction color) getG (Offset x y) = do
     setSourceColor (getG color)
     let
       c = getG gcurvature
