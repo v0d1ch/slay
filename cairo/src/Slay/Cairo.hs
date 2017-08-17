@@ -116,7 +116,7 @@ instance RenderElement g (PrimCurve g) where
       p1 = bendPoint c (w/2,if ttb == False then h else 0) (if ltr == False then w else 0, h/2)
       p2 = bendPoint c (w/2, h) (if ttb == False then w else 0, h/2)
 
-      moveToX = if ltr && ttb
+      moveToXY = if ltr && ttb
                 then (x', y')
                 else if ltr == False && ttb
                      then ((x' + w), y')
@@ -130,6 +130,6 @@ instance RenderElement g (PrimCurve g) where
           (x' + fst pStart) (y' + snd pStart)
           (x' + fst pMid)   (y' + snd pMid)
           (x' + fst pEnd)   (y' + snd pEnd)
-    Cairo.moveTo (realToFrac (fst moveToX)) (realToFrac (snd moveToX))
+    Cairo.moveTo (realToFrac (fst moveToXY)) (realToFrac (snd moveToXY))
     curveThrough p1 p2 p3
     Cairo.stroke
