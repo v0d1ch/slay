@@ -103,21 +103,42 @@ bendPoint :: Curvature -> (Double, Double) -> (Double, Double) -> (Double, Doubl
 bendPoint c (ax, ay) (bx, by) = (bend c ax bx, bend c ay by)
 
 instance RenderElement g (PrimCurve g) where
-  renderElement (PrimCurve extents gcurvature color direction) getG (Offset x y) = do
+  renderElement (PrimCurve extents gcurvature color dir) getG (Offset x y) = do
     setSourceColor (getG color)
     let
       c = getG gcurvature
       Extents (realToFrac -> w) (realToFrac -> h) = extents
       x' = realToFrac x
       y' = realToFrac y
-      p1 = bendPoint c (w/2, 0) (0, h/2)
-      p2 = bendPoint c (w/2, h) (w, h/2)
+      p1 = if (directionLeftToRight dir) && (directionTopToBottom dir)
+           then bendPoint c (w/2, 0) (0, h/2)
+           else if (directionLeftToRight dir) == False && (directionTopToBottom  dir) == True
+               then bendPoint c (w/2, 0) (w, h/2)
+               else if (directionLeftToRight dir) == True && (directionTopToBottom dir) == False
+                    then bendPoint c (w/2, 0) (0, h/2)
+                    else bendPoint c (w/2, 0) (0, h/2)
+
+      p2 = if (directionLeftToRight dir) && (directionTopToBottom dir)
+           then bendPoint c (w/2, h) (w, h/2)
+           else if (directionLeftToRight dir) == False && (directionTopToBottom dir) == True
+               then bendPoint c (w/2, h) (0, h/2)
+               else if (directionLeftToRight dir) == True && (directionTopToBottom dir) == False
+                    then bendPoint c (w/2, h) (w, h/2)
+                    else bendPoint c (w/2, h) (w, h/2)
+      moveToX = if (directionLeftToRight dir) && (directionTopToBottom dir)
+                then (x', y')
+                else if (directionLeftToRight dir) == False && (directionTopToBottom dir) == True
+                     then ((x' + w), y')
+                     else if (directionLeftToRight dir) == True && (directionTopToBottom dir) == False
+                          then (x', (y' + h))
+                          else (x', y')
+
       p3 = (w, h)
       curveThrough pStart pMid pEnd =
         Cairo.curveTo
           (x' + fst pStart) (y' + snd pStart)
           (x' + fst pMid)   (y' + snd pMid)
           (x' + fst pEnd)   (y' + snd pEnd)
-    Cairo.moveTo (realToFrac x) (realToFrac y)
+    Cairo.moveTo (realToFrac (fst moveToX)) (realToFrac (snd moveToX))
     curveThrough p1 p2 p3
     Cairo.stroke
