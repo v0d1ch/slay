@@ -106,30 +106,21 @@ instance RenderElement g (PrimCurve g) where
   renderElement (PrimCurve extents gcurvature color dir) getG (Offset x y) = do
     setSourceColor (getG color)
     let
+      ltr = directionLeftToRight dir
+      ttb = directionTopToBottom dir
+    let
       c = getG gcurvature
       Extents (realToFrac -> w) (realToFrac -> h) = extents
       x' = realToFrac x
       y' = realToFrac y
-      p1 = if (directionLeftToRight dir) && (directionTopToBottom dir)
-           then bendPoint c (w/2, 0) (0, h/2)
-           else if (directionLeftToRight dir) == False && (directionTopToBottom  dir) == True
-               then bendPoint c (w/2, 0) (w, h/2)
-               else if (directionLeftToRight dir) == True && (directionTopToBottom dir) == False
-                    then bendPoint c (w/2, 0) (0, h/2)
-                    else bendPoint c (w/2, 0) (0, h/2)
+      p1 = bendPoint c (w/2,if ttb == False then h else 0) (if ltr == False then w else 0, h/2)
+      p2 = bendPoint c (w/2, h) (if ttb == False then w else 0, h/2)
 
-      p2 = if (directionLeftToRight dir) && (directionTopToBottom dir)
-           then bendPoint c (w/2, h) (w, h/2)
-           else if (directionLeftToRight dir) == False && (directionTopToBottom dir) == True
-               then bendPoint c (w/2, h) (0, h/2)
-               else if (directionLeftToRight dir) == True && (directionTopToBottom dir) == False
-                    then bendPoint c (w/2, h) (w, h/2)
-                    else bendPoint c (w/2, h) (w, h/2)
-      moveToX = if (directionLeftToRight dir) && (directionTopToBottom dir)
+      moveToX = if ltr && ttb
                 then (x', y')
-                else if (directionLeftToRight dir) == False && (directionTopToBottom dir) == True
+                else if ltr == False && ttb
                      then ((x' + w), y')
-                     else if (directionLeftToRight dir) == True && (directionTopToBottom dir) == False
+                     else if ltr && ttb == False
                           then (x', (y' + h))
                           else (x', y')
 
